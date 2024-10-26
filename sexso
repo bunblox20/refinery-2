@@ -128,23 +128,23 @@ elseif CoreGui:FindFirstChild("RobloxGui") then
 	Rayfield.Parent = CoreGui:FindFirstChild("RobloxGui")
 else
 	Rayfield.Parent = CoreGui
-end
+-- Removed extra 'end'
 
 if gethui then
 	for _, Interface in ipairs(gethui():GetChildren()) do
 		if Interface.Name == Rayfield.Name and Interface ~= Rayfield then
 			Interface.Enabled = false
 			Interface.Name = "Rayfield-Old"
-		end
-	end
+-- Removed extra 'end'
+-- Removed extra 'end'
 else
 	for _, Interface in ipairs(CoreGui:GetChildren()) do
 		if Interface.Name == Rayfield.Name and Interface ~= Rayfield then
 			Interface.Enabled = false
 			Interface.Name = "Rayfield-Old"
-		end
-	end
-end
+-- Removed extra 'end'
+-- Removed extra 'end'
+-- Removed extra 'end'
 
 -- Object Variables
 
@@ -179,8 +179,8 @@ function ChangeTheme(ThemeName)
 				obj.TextColor3 = SelectedTheme.TextColor
 				obj.Font = SelectedTheme.TextFont
 			end
-		end
-	end
+-- Removed extra 'end'
+-- Removed extra 'end'
 
 	Rayfield.Main.BackgroundColor3 = SelectedTheme.Background
 	Rayfield.Main.Topbar.BackgroundColor3 = SelectedTheme.Topbar
@@ -196,8 +196,8 @@ function ChangeTheme(ThemeName)
 			if Element.ClassName == "Frame" and Element.Name ~= "Placeholder" and Element.Name ~= "SectionSpacing" and Element.Name ~= "SectionTitle"  then
 				Element.BackgroundColor3 = SelectedTheme.ElementBackground
 				Element.UIStroke.Color = SelectedTheme.ElementStroke
-			end
-		end
+-- Removed extra 'end'
+-- Removed extra 'end'
 	end
 
 end
