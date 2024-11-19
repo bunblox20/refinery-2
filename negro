@@ -21,6 +21,10 @@ local PlayerSection = TeleportTab:NewSection("Teletransporte del Jugador")
 local AltarsTab = Window:NewTab("Altares")
 local AltarsSection = AltarsTab:NewSection("Teletransporte a Altares")
 
+-- Pestaña de extras
+local ExtrasTab = Window:NewTab("Extras")
+local ExtrasSection = ExtrasTab:NewSection("Utilidades Adicionales")
+
 -- Coordenadas de las tiendas
 local shopLocations = {
     {name = "Tienda Inicial", position = Vector3.new(1913.04, 19.03, -164.75)},
@@ -161,6 +165,11 @@ BlockSection:NewButton("Guardar Posición de Teletransporte", "Guarda la posici�
 PlayerSection:NewButton("Guardar Posición del Jugador", "Guarda la posición actual del jugador.", savePlayerPosition)
 PlayerSection:NewButton("Teletransportar al Jugador", "Teletransporta al jugador a la posición guardada.", teleportPlayer)
 
+-- Función para cargar Infinite Yield
+ExtrasSection:NewButton("Cargar Infinite Yield", "Carga Infinite Yield en el juego.", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
+
 -- Pestaña de configuración
 local ConfigTab = Window:NewTab("Configuración")
 local ConfigSection = ConfigTab:NewSection("Configuraciones de Interfaz")
@@ -171,10 +180,4 @@ end)
 
 -- Pestaña de créditos
 local CreditsTab = Window:NewTab("Créditos")
-local CreditsSection = CreditsTab:NewSection("Creador")
-
-CreditsSection:NewLabel("Creado por: Usuario con ayuda de IA")
-CreditsSection:NewLabel("Versión: 1.1")
-
--- Mensaje de éxito
-print("Interfaz cargada exitosamente con todas las funcionalidades.")
+local CreditsSection = CreditsTab:NewSection("Hecho por [Tu Nombre]")
