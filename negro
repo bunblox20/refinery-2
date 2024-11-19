@@ -1,96 +1,26 @@
--- Carga la biblioteca de UI personalizada desde el archivo proporcionado
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bunblox20/SONIC-BASICO/refs/heads/master/sonic2"))()
-
--- Crear la ventana principal
-local Window = Library.CreateLib("Interfaz Personalizada", "RJTheme3")
-
--- Pestaña de teletransporte a tiendas
-local ShopTab = Window:NewTab("Tiendas")
-local ShopSection = ShopTab:NewSection("Teletransporte a Tiendas")
-
--- Pestaña de refinería
-local RefineryTab = Window:NewTab("Refinería")
-local RefinerySection = RefineryTab:NewSection("Teletransporte a Refinería")
-
--- Pestaña de teletransportes y bloques
-local TeleportTab = Window:NewTab("Teletransportes")
-local BlockSection = TeleportTab:NewSection("Bloques y Teletransportes")
-local PlayerSection = TeleportTab:NewSection("Teletransporte del Jugador")
-
--- Pestaña de altares
-local AltarsTab = Window:NewTab("Altares")
-local AltarsSection = AltarsTab:NewSection("Teletransporte a Altares")
-
--- Pestaña de extras
-local ExtrasTab = Window:NewTab("Extras")
-local ExtrasSection = ExtrasTab:NewSection("Utilidades Adicionales")
-
--- Coordenadas de las tiendas
-local shopLocations = {
-    {name = "Tienda Inicial", position = Vector3.new(1913.04, 19.03, -164.75)},
-    {name = "Zona de Vender", position = Vector3.new(1365.58, 57.78, 119.72)},
-    {name = "Tienda de Muebles", position = Vector3.new(-639.34, 97.28, 280.86)},
-    {name = "Tienda de Lógica", position = Vector3.new(-5127.85, 76.91, -2849.70)},
-    {name = "Tienda de Vehículos", position = Vector3.new(-6863.43, 40.25, -4341.31)},
-    {name = "Tienda Misteriosa", position = Vector3.new(-5329.27, 138.35, -3450.57)},
-    {name = "Tienda de Flores", position = Vector3.new(2108.07, -409.71, -260.98)},
-    {name = "Tienda en la Cueva", position = Vector3.new(2133.29, -416.56, 3.05)},
-    {name = "Laboratorio", position = Vector3.new(-4468.53, -195.77, -1980.78)},
-}
-
--- Coordenadas de las ubicaciones de refinería
-local refineryLocations = {
-    {name = "Cueva Storm", position = Vector3.new(1171.44, -185.28, 1150.52)},
-    {name = "Cueva Forest", position = Vector3.new(1331.25, -444.28, -408.02)},
-    {name = "Zona de Minería 1", position = Vector3.new(-6247.86, 121.35, -2190.77)},
-    {name = "Zona de Cloud", position = Vector3.new(-7356.26, 761.10, -3684.18)},
-    {name = "Cueva Marina", position = Vector3.new(-7894.11, 164.75, -3200.58)},
-    {name = "Cueva del Vacío", position = Vector3.new(-6676.35, -505.75, 1169.98)},
-}
-
--- Coordenadas de los altares
-local altarLocations = {
-    {name = "Altar de la Caña", position = Vector3.new(-1329.68, -348.48, 465.88)},
-    {name = "Altar de Encantamientos", position = Vector3.new(3097.76, -587.18, -1568.88)},
-    {name = "Altar Pico Sobrecultivado", position = Vector3.new(1175.14, -479.25, -1216.75)},
-}
-
--- Función para teletransportar al jugador a una posición
-local function teleportPlayerTo(position)
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local rootPart = character:WaitForChild("HumanoidRootPart")
-
-    rootPart.CFrame = CFrame.new(position)
-end
-
--- Crear botones para teletransporte a tiendas
-for _, shop in ipairs(shopLocations) do
-    ShopSection:NewButton(shop.name, "Teletransporta al jugador a " .. shop.name, function()
-        teleportPlayerTo(shop.position)
-    end)
-end
-
--- Crear botones para teletransporte a ubicaciones de refinería
-for _, refinery in ipairs(refineryLocations) do
-    RefinerySection:NewButton(refinery.name, "Teletransporta al jugador a " .. refinery.name, function()
-        teleportPlayerTo(refinery.position)
-    end)
-end
-
--- Crear botones para teletransporte a altares
-for _, altar in ipairs(altarLocations) do
-    AltarsSection:NewButton(altar.name, "Teletransporta al jugador a " .. altar.name, function()
-        teleportPlayerTo(altar.position)
-    end)
-end
-
--- Variables para bloques y teletransporte
+-- Variables globales
 local currentYellowBlock = nil
-local savedPlayerPosition = nil
 local blockTeleportPosition = nil
 
--- Función para crear un bloque amarillo
+-- Cargar la biblioteca de interfaz de usuario
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bunblox20/SONIC-BASICO/refs/heads/master/sonic2"))()
+local Window = Library.CreateLib("Interfaz Completa", "RJTheme3")
+
+-- Configurar pestaña de Bloques
+local BlockTab = Window:NewTab("Bloques")
+local BlockSection = BlockTab:NewSection("Control de Bloques")
+
+-- Función para guardar la posición de teletransporte del bloque amarillo
+local function saveBlockTeleportPosition()
+    if currentYellowBlock then
+        blockTeleportPosition = currentYellowBlock.Position
+        print("Posición guardada para teletransporte del bloque: " .. tostring(blockTeleportPosition))
+    else
+        warn("No hay bloque amarillo creado.")
+    end
+end
+
+-- Función para crear el bloque amarillo
 local function createYellowBlock()
     -- Eliminar bloque existente si ya hay uno
     if currentYellowBlock then
@@ -109,8 +39,10 @@ local function createYellowBlock()
 
     -- Configurar teletransporte para objetos tocados
     block.Touched:Connect(function(hit)
+        -- Verificar si la posición guardada está definida
         if blockTeleportPosition then
             local parent = hit.Parent
+            -- Teletransportar diferentes tipos de objetos
             if parent:FindFirstChild("Humanoid") then
                 parent:MoveTo(blockTeleportPosition)
             elseif parent:IsA("Model") and parent.PrimaryPart then
@@ -124,60 +56,91 @@ local function createYellowBlock()
     end)
 end
 
--- Función para guardar la posición del bloque amarillo
-local function saveBlockTeleportPosition()
-    if currentYellowBlock then
-        blockTeleportPosition = currentYellowBlock.Position
-        print("Posición guardada para teletransporte del bloque: " .. tostring(blockTeleportPosition))
-    else
-        warn("No hay bloque amarillo creado.")
-    end
-end
-
--- Función para guardar la posición del jugador
-local function savePlayerPosition()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local rootPart = character:WaitForChild("HumanoidRootPart")
-
-    savedPlayerPosition = rootPart.Position
-    print("Posición del jugador guardada: " .. tostring(savedPlayerPosition))
-end
-
--- Función para teletransportar al jugador a la posición guardada
-local function teleportPlayer()
-    if savedPlayerPosition then
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local rootPart = character:WaitForChild("HumanoidRootPart")
-
-        rootPart.CFrame = CFrame.new(savedPlayerPosition)
-    else
-        warn("No hay posición guardada.")
-    end
-end
-
--- Crear botones para funciones de bloques
+-- Botones de control de bloques
 BlockSection:NewButton("Crear Bloque Amarillo", "Crea un bloque amarillo para teletransporte.", createYellowBlock)
 BlockSection:NewButton("Guardar Posición de Teletransporte", "Guarda la posición del bloque amarillo.", saveBlockTeleportPosition)
 
--- Crear botones para funciones del jugador
-PlayerSection:NewButton("Guardar Posición del Jugador", "Guarda la posición actual del jugador.", savePlayerPosition)
-PlayerSection:NewButton("Teletransportar al Jugador", "Teletransporta al jugador a la posición guardada.", teleportPlayer)
+-- Configurar pestaña de Teletransportes
+local TeleportTab = Window:NewTab("Teletransportes")
+local TeleportSection = TeleportTab:NewSection("Tiendas")
+local RefinerySection = TeleportTab:NewSection("Refinerías")
 
--- Función para cargar Infinite Yield
-ExtrasSection:NewButton("Cargar Infinite Yield", "Carga Infinite Yield en el juego.", function()
+-- Tiendas
+local shopLocations = {
+    ["Tienda Inicial"] = Vector3.new(1913.04, 19.03, -164.75),
+    ["Zona de Vender"] = Vector3.new(1365.58, 57.78, 119.72),
+    ["Tienda de Muebles"] = Vector3.new(-639.34, 97.28, 280.86),
+    ["Tienda de Lógica"] = Vector3.new(-5127.85, 76.91, -2849.70),
+    ["Tienda de Vehículos"] = Vector3.new(-6863.43, 40.25, -4341.31),
+    ["Tienda Misteriosa"] = Vector3.new(-5329.27, 138.35, -3450.57),
+    ["Tienda de Flores"] = Vector3.new(2108.07, -409.71, -260.98),
+    ["Tienda en la Cueva"] = Vector3.new(2133.29, -416.56, 3.05),
+    ["Laboratorio"] = Vector3.new(-4468.53, -195.77, -1980.78)
+}
+
+for name, position in pairs(shopLocations) do
+    TeleportSection:NewButton(name, "Teletransporta a la ubicación.", function()
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+        end
+    end)
+end
+
+-- Refinerías
+local refineryLocations = {
+    ["Cueva Storm"] = Vector3.new(1171.44, -185.28, 1150.52),
+    ["Cueva Fores"] = Vector3.new(1331.25, -444.28, -408.02),
+    ["Zona de Minería 1"] = Vector3.new(-6247.86, 121.35, -2190.77),
+    ["Zona de Cloud"] = Vector3.new(-7356.26, 761.10, -3684.18),
+    ["Cueva Marina"] = Vector3.new(-7894.11, 164.75, -3200.58),
+    ["Cueva del Vacío"] = Vector3.new(-6676.35, -505.75, 1169.98)
+}
+
+for name, position in pairs(refineryLocations) do
+    RefinerySection:NewButton(name, "Teletransporta a la ubicación.", function()
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+        end
+    end)
+end
+
+-- Configurar pestaña de Altares
+local AltarTab = Window:NewTab("Altares")
+local AltarSection = AltarTab:NewSection("Altares")
+
+local altarLocations = {
+    ["Altar de la Caña"] = Vector3.new(-1329.68, -348.48, 465.88),
+    ["Altar de Encantamientos"] = Vector3.new(3097.76, -587.18, -1568.88),
+    ["Altar Pico Sobrecultivado"] = Vector3.new(1175.14, -479.25, -1216.75)
+}
+
+for name, position in pairs(altarLocations) do
+    AltarSection:NewButton(name, "Teletransporta a la ubicación.", function()
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+        end
+    end)
+end
+
+-- Configurar pestaña de Extras
+local ExtrasTab = Window:NewTab("Extras")
+local ExtrasSection = ExtrasTab:NewSection("Utilidades")
+
+ExtrasSection:NewButton("Infinite Yield", "Carga el script de Infinite Yield.", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
 end)
 
--- Pestaña de configuración
+-- Configurar pestaña de Configuración
 local ConfigTab = Window:NewTab("Configuración")
-local ConfigSection = ConfigTab:NewSection("Configuraciones de Interfaz")
+local ConfigSection = ConfigTab:NewSection("Interfaz")
 
-ConfigSection:NewKeybind("Cambiar Visibilidad", "Muestra u oculta la interfaz.", Enum.KeyCode.F, function()
+ConfigSection:NewKeybind("Mostrar/Ocultar GUI", "Configura una tecla para mostrar/ocultar.", Enum.KeyCode.F, function()
     Library:ToggleUI()
 end)
 
--- Pestaña de créditos
+-- Créditos
 local CreditsTab = Window:NewTab("Créditos")
 local CreditsSection = CreditsTab:NewSection("Hecho por [Tu Nombre]")
