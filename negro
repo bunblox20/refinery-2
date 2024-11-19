@@ -1,7 +1,7 @@
 -- Variables globales
 local currentYellowBlock = nil
-local blockTeleportPosition = nil
-local playerTeleportPosition = nil
+local blockTeleportPosition = nil -- Para teletransportar objetos tocados
+local playerTeleportPosition = nil -- Para teletransportar al jugador
 
 -- Cargar la biblioteca de interfaz de usuario
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bunblox20/SONIC-BASICO/refs/heads/master/sonic2"))()
@@ -15,34 +15,9 @@ local BlockSection = BlockTab:NewSection("Control de Bloques")
 local function saveBlockTeleportPosition()
     if currentYellowBlock then
         blockTeleportPosition = currentYellowBlock.Position
-        print("Posición guardada para teletransporte del bloque: " .. tostring(blockTeleportPosition))
+        print("Posición de teletransporte del bloque guardada en: " .. tostring(blockTeleportPosition))
     else
-        warn("No hay bloque amarillo creado.")
-    end
-end
-
--- Función para guardar la posición de teletransporte del jugador
-local function savePlayerTeleportPosition()
-    local player = game.Players.LocalPlayer
-    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        playerTeleportPosition = player.Character.HumanoidRootPart.Position
-        print("Posición guardada para teletransporte del jugador: " .. tostring(playerTeleportPosition))
-    else
-        warn("No se pudo guardar la posición del jugador.")
-    end
-end
-
--- Función para teletransportar al jugador a la posición guardada
-local function teleportPlayerToSavedPosition()
-    if playerTeleportPosition then
-        local player = game.Players.LocalPlayer
-        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            player.Character.HumanoidRootPart.CFrame = CFrame.new(playerTeleportPosition)
-        else
-            warn("El jugador no tiene un HumanoidRootPart válido.")
-        end
-    else
-        warn("No hay una posición guardada para el jugador.")
+        warn("No hay bloque amarillo creado para guardar su posición.")
     end
 end
 
@@ -53,7 +28,7 @@ local function createYellowBlock()
         currentYellowBlock:Destroy()
     end
 
-    -- Crear un bloque amarillo nuevo
+    -- Crear un nuevo bloque amarillo
     local block = Instance.new("Part")
     block.Size = Vector3.new(4, 4, 4)
     block.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, 5, 0)
@@ -63,7 +38,7 @@ local function createYellowBlock()
     block.Parent = game.Workspace
     currentYellowBlock = block
 
-    -- Configurar teletransporte para objetos tocados
+    -- Configurar la lógica de teletransporte para objetos tocados
     block.Touched:Connect(function(hit)
         if blockTeleportPosition then
             local parent = hit.Parent
@@ -76,9 +51,11 @@ local function createYellowBlock()
                 hit.Position = blockTeleportPosition
             end
         else
-            warn("Posición de teletransporte del bloque no configurada.")
+            warn("La posición de teletransporte no está configurada.")
         end
     end)
+
+    print("Bloque amarillo creado en: " .. tostring(block.Position))
 end
 
 -- Botones de control de bloques
@@ -92,8 +69,28 @@ local TeleportSection = TeleportTab:NewSection("Tiendas")
 local PlayerTeleportSection = TeleportTab:NewSection("Teletransporte del Jugador")
 
 -- Botones para guardar y teletransportar al jugador
-PlayerTeleportSection:NewButton("Guardar Posición", "Guarda la posición del jugador para teletransporte.", savePlayerTeleportPosition)
-PlayerTeleportSection:NewButton("Teletransportar Jugador", "Teletransporta al jugador a la posición guardada.", teleportPlayerToSavedPosition)
+PlayerTeleportSection:NewButton("Guardar Posición", "Guarda la posición del jugador para teletransporte.", function()
+    local player = game.Players.LocalPlayer
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        playerTeleportPosition = player.Character.HumanoidRootPart.Position
+        print("Posición del jugador guardada en: " .. tostring(playerTeleportPosition))
+    else
+        warn("No se pudo guardar la posición del jugador.")
+    end
+end)
+
+PlayerTeleportSection:NewButton("Teletransportar Jugador", "Teletransporta al jugador a la posición guardada.", function()
+    if playerTeleportPosition then
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(playerTeleportPosition)
+        else
+            warn("El jugador no tiene un HumanoidRootPart válido.")
+        end
+    else
+        warn("No hay una posición guardada para el jugador.")
+    end
+end)
 
 -- Tiendas
 local shopLocations = {
@@ -110,25 +107,6 @@ local shopLocations = {
 
 for name, position in pairs(shopLocations) do
     TeleportSection:NewButton(name, "Teletransporta a la ubicación.", function()
-        local player = game.Players.LocalPlayer
-        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
-        end
-    end)
-end
-
--- Configurar pestaña de Altares
-local AltarTab = Window:NewTab("Altares")
-local AltarSection = AltarTab:NewSection("Altares")
-
-local altarLocations = {
-    ["Altar de la Caña"] = Vector3.new(-1329.68, -348.48, 465.88),
-    ["Altar de Encantamientos"] = Vector3.new(3097.76, -587.18, -1568.88),
-    ["Altar Pico Sobrecultivado"] = Vector3.new(1175.14, -479.25, -1216.75)
-}
-
-for name, position in pairs(altarLocations) do
-    AltarSection:NewButton(name, "Teletransporta a la ubicación.", function()
         local player = game.Players.LocalPlayer
         if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
@@ -155,4 +133,3 @@ end)
 -- Créditos
 local CreditsTab = Window:NewTab("Créditos")
 local CreditsSection = CreditsTab:NewSection("Hecho por [Tu Nombre]")
-
