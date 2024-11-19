@@ -15,7 +15,7 @@ local BlockSection = BlockTab:NewSection("Control de Bloques")
 local function saveBlockTeleportPosition()
     if currentYellowBlock then
         blockTeleportPosition = currentYellowBlock.Position
-        print("Posición de teletransporte del bloque guardada en: " .. tostring(blockTeleportPosition))
+        print("Nueva posición de teletransporte del bloque guardada: " .. tostring(blockTeleportPosition))
     else
         warn("No hay bloque amarillo creado para guardar su posición.")
     end
