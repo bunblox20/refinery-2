@@ -17,6 +17,10 @@ local TeleportTab = Window:NewTab("Teletransportes")
 local BlockSection = TeleportTab:NewSection("Bloques y Teletransportes")
 local PlayerSection = TeleportTab:NewSection("Teletransporte del Jugador")
 
+-- Pestaña de altares
+local AltarsTab = Window:NewTab("Altares")
+local AltarsSection = AltarsTab:NewSection("Teletransporte a Altares")
+
 -- Coordenadas de las tiendas
 local shopLocations = {
     {name = "Tienda Inicial", position = Vector3.new(1913.04, 19.03, -164.75)},
@@ -40,6 +44,13 @@ local refineryLocations = {
     {name = "Cueva del Vacío", position = Vector3.new(-6676.35, -505.75, 1169.98)},
 }
 
+-- Coordenadas de los altares
+local altarLocations = {
+    {name = "Altar de la Caña", position = Vector3.new(-1329.68, -348.48, 465.88)},
+    {name = "Altar de Encantamientos", position = Vector3.new(3097.76, -587.18, -1568.88)},
+    {name = "Altar Pico Sobrecultivado", position = Vector3.new(1175.14, -479.25, -1216.75)},
+}
+
 -- Función para teletransportar al jugador a una posición
 local function teleportPlayerTo(position)
     local player = game.Players.LocalPlayer
@@ -60,6 +71,13 @@ end
 for _, refinery in ipairs(refineryLocations) do
     RefinerySection:NewButton(refinery.name, "Teletransporta al jugador a " .. refinery.name, function()
         teleportPlayerTo(refinery.position)
+    end)
+end
+
+-- Crear botones para teletransporte a altares
+for _, altar in ipairs(altarLocations) do
+    AltarsSection:NewButton(altar.name, "Teletransporta al jugador a " .. altar.name, function()
+        teleportPlayerTo(altar.position)
     end)
 end
 
@@ -143,12 +161,20 @@ BlockSection:NewButton("Guardar Posición de Teletransporte", "Guarda la posici�
 PlayerSection:NewButton("Guardar Posición del Jugador", "Guarda la posición actual del jugador.", savePlayerPosition)
 PlayerSection:NewButton("Teletransportar al Jugador", "Teletransporta al jugador a la posición guardada.", teleportPlayer)
 
+-- Pestaña de configuración
+local ConfigTab = Window:NewTab("Configuración")
+local ConfigSection = ConfigTab:NewSection("Configuraciones de Interfaz")
+
+ConfigSection:NewKeybind("Cambiar Visibilidad", "Muestra u oculta la interfaz.", Enum.KeyCode.F, function()
+    Library:ToggleUI()
+end)
+
 -- Pestaña de créditos
 local CreditsTab = Window:NewTab("Créditos")
 local CreditsSection = CreditsTab:NewSection("Creador")
 
 CreditsSection:NewLabel("Creado por: Usuario con ayuda de IA")
-CreditsSection:NewLabel("Versión: 1.0")
+CreditsSection:NewLabel("Versión: 1.1")
 
 -- Mensaje de éxito
 print("Interfaz cargada exitosamente con todas las funcionalidades.")
