@@ -8,15 +8,14 @@ local Window = Library.CreateLib("Interfaz Personalizada", "RJTheme3")
 local ShopTab = Window:NewTab("Tiendas")
 local ShopSection = ShopTab:NewSection("Teletransporte a Tiendas")
 
--- Función para teletransportar al jugador a una posición
-local function teleportPlayerTo(position)
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local rootPart = character:WaitForChild("HumanoidRootPart")
+-- Pestaña de refinería
+local RefineryTab = Window:NewTab("Refinería")
+local RefinerySection = RefineryTab:NewSection("Teletransporte a Refinería")
 
-    -- Teletransportar al jugador
-    rootPart.CFrame = CFrame.new(position)
-end
+-- Pestaña de teletransportes y bloques
+local TeleportTab = Window:NewTab("Teletransportes")
+local BlockSection = TeleportTab:NewSection("Bloques y Teletransportes")
+local PlayerSection = TeleportTab:NewSection("Teletransporte del Jugador")
 
 -- Coordenadas de las tiendas
 local shopLocations = {
@@ -31,31 +30,52 @@ local shopLocations = {
     {name = "Laboratorio", position = Vector3.new(-4468.53, -195.77, -1980.78)},
 }
 
--- Crear botones para cada tienda
+-- Coordenadas de las ubicaciones de refinería
+local refineryLocations = {
+    {name = "Cueva Storm", position = Vector3.new(1171.44, -185.28, 1150.52)},
+    {name = "Cueva Forest", position = Vector3.new(1331.25, -444.28, -408.02)},
+    {name = "Zona de Minería 1", position = Vector3.new(-6247.86, 121.35, -2190.77)},
+    {name = "Zona de Cloud", position = Vector3.new(-7356.26, 761.10, -3684.18)},
+    {name = "Cueva Marina", position = Vector3.new(-7894.11, 164.75, -3200.58)},
+    {name = "Cueva del Vacío", position = Vector3.new(-6676.35, -505.75, 1169.98)},
+}
+
+-- Función para teletransportar al jugador a una posición
+local function teleportPlayerTo(position)
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+
+    rootPart.CFrame = CFrame.new(position)
+end
+
+-- Crear botones para teletransporte a tiendas
 for _, shop in ipairs(shopLocations) do
     ShopSection:NewButton(shop.name, "Teletransporta al jugador a " .. shop.name, function()
         teleportPlayerTo(shop.position)
     end)
 end
 
--- Pestaña de bloques y teletransportes
-local TeleportTab = Window:NewTab("Teletransportes")
-local BlockSection = TeleportTab:NewSection("Bloques y Teletransportes")
-local PlayerSection = TeleportTab:NewSection("Teletransporte del Jugador")
+-- Crear botones para teletransporte a ubicaciones de refinería
+for _, refinery in ipairs(refineryLocations) do
+    RefinerySection:NewButton(refinery.name, "Teletransporta al jugador a " .. refinery.name, function()
+        teleportPlayerTo(refinery.position)
+    end)
+end
 
--- Variables para bloques y posiciones guardadas
+-- Variables para bloques y teletransporte
 local currentYellowBlock = nil
-local savedPlayerTeleportPosition = nil -- Posición guardada para el jugador
-local blockTeleportPosition = nil -- Posición guardada para el bloque amarillo
+local savedPlayerPosition = nil
+local blockTeleportPosition = nil
 
--- Función para crear un bloque amarillo que teletransporta objetos tocados
+-- Función para crear un bloque amarillo
 local function createYellowBlock()
-    -- Destruir el bloque previo si existe
+    -- Eliminar bloque existente si ya hay uno
     if currentYellowBlock then
         currentYellowBlock:Destroy()
     end
 
-    -- Crear un nuevo bloque amarillo
+    -- Crear un bloque amarillo nuevo
     local block = Instance.new("Part")
     block.Size = Vector3.new(4, 4, 4)
     block.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0, 5, 0)
@@ -65,80 +85,70 @@ local function createYellowBlock()
     block.Parent = game.Workspace
     currentYellowBlock = block
 
-    -- Teletransportar objetos tocados a la posición guardada del bloque
+    -- Configurar teletransporte para objetos tocados
     block.Touched:Connect(function(hit)
         if blockTeleportPosition then
             local parent = hit.Parent
             if parent:FindFirstChild("Humanoid") then
                 parent:MoveTo(blockTeleportPosition)
-                print("Personaje teletransportado a: " .. tostring(blockTeleportPosition))
-            elseif parent:IsA("Model") then
-                local primaryPart = parent.PrimaryPart or parent:FindFirstChildWhichIsA("BasePart")
-                if primaryPart then
-                    local offset = blockTeleportPosition - primaryPart.Position
-                    for _, part in ipairs(parent:GetDescendants()) do
-                        if part:IsA("BasePart") then
-                            part.Position = part.Position + offset
-                        end
-                    end
-                    print("Modelo teletransportado a: " .. tostring(blockTeleportPosition))
-                end
+            elseif parent:IsA("Model") and parent.PrimaryPart then
+                parent:SetPrimaryPartCFrame(CFrame.new(blockTeleportPosition))
             elseif hit:IsA("BasePart") then
                 hit.Position = blockTeleportPosition
-                print("Parte teletransportada a: " .. tostring(blockTeleportPosition))
             end
         else
-            warn("No se ha guardado ninguna posición para el bloque amarillo.")
+            warn("Posición de teletransporte no configurada.")
         end
     end)
 end
 
--- Función para guardar la posición actual del jugador
-local function savePlayerPosition()
-    savedPlayerTeleportPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-    print("Posición del jugador guardada: " .. tostring(savedPlayerTeleportPosition))
-end
-
--- Función para guardar la posición específica para el bloque amarillo
+-- Función para guardar la posición del bloque amarillo
 local function saveBlockTeleportPosition()
     if currentYellowBlock then
-        blockTeleportPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-        print("Posición de teletransporte para el bloque guardada: " .. tostring(blockTeleportPosition))
+        blockTeleportPosition = currentYellowBlock.Position
+        print("Posición guardada para teletransporte del bloque: " .. tostring(blockTeleportPosition))
     else
-        warn("Primero genera un bloque amarillo.")
+        warn("No hay bloque amarillo creado.")
     end
 end
 
--- Función para teletransportarse a la posición guardada del jugador
+-- Función para guardar la posición del jugador
+local function savePlayerPosition()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+
+    savedPlayerPosition = rootPart.Position
+    print("Posición del jugador guardada: " .. tostring(savedPlayerPosition))
+end
+
+-- Función para teletransportar al jugador a la posición guardada
 local function teleportPlayer()
-    if savedPlayerTeleportPosition then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(savedPlayerTeleportPosition)
-        print("Teletransportando jugador a: " .. tostring(savedPlayerTeleportPosition))
+    if savedPlayerPosition then
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local rootPart = character:WaitForChild("HumanoidRootPart")
+
+        rootPart.CFrame = CFrame.new(savedPlayerPosition)
     else
-        warn("No se ha guardado ninguna posición del jugador.")
+        warn("No hay posición guardada.")
     end
 end
 
--- Botones en la sección de bloques
-BlockSection:NewButton("Generar Bloque Amarillo", "Crea un bloque amarillo", function()
-    createYellowBlock()
-end)
+-- Crear botones para funciones de bloques
+BlockSection:NewButton("Crear Bloque Amarillo", "Crea un bloque amarillo para teletransporte.", createYellowBlock)
+BlockSection:NewButton("Guardar Posición de Teletransporte", "Guarda la posición del bloque amarillo.", saveBlockTeleportPosition)
 
-BlockSection:NewButton("Guardar Posición para Teletransporte del Bloque", "Guarda la posición a la que teletransportará el bloque", function()
-    saveBlockTeleportPosition()
-end)
+-- Crear botones para funciones del jugador
+PlayerSection:NewButton("Guardar Posición del Jugador", "Guarda la posición actual del jugador.", savePlayerPosition)
+PlayerSection:NewButton("Teletransportar al Jugador", "Teletransporta al jugador a la posición guardada.", teleportPlayer)
 
--- Botones en la sección de teletransporte del jugador
-PlayerSection:NewButton("Guardar Posición del Jugador", "Guarda tu posición actual", function()
-    savePlayerPosition()
-end)
-
-PlayerSection:NewButton("Teletransportarse", "Teletranspórtate a la posición guardada", function()
-    teleportPlayer()
-end)
-
--- Pestaña de créditos (opcional)
+-- Pestaña de créditos
 local CreditsTab = Window:NewTab("Créditos")
 local CreditsSection = CreditsTab:NewSection("Creador")
-CreditsSection:NewLabel("Adaptado por tu script original.")
-CreditsSection:NewLabel("Funciones añadidas por ChatGPT.")
+
+CreditsSection:NewLabel("Creado por: Usuario con ayuda de IA")
+CreditsSection:NewLabel("Versión: 1.0")
+
+-- Mensaje de éxito
+print("Interfaz cargada exitosamente con todas las funcionalidades.")
