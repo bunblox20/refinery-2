@@ -103,6 +103,9 @@ local function createYellowBlock()
     block.Parent = game.Workspace
     currentYellowBlock = block
 
+    -- Guardar la posición del bloque amarillo para teletransporte
+    blockTeleportPosition = block.Position
+
     -- Configurar teletransporte para objetos tocados
     block.Touched:Connect(function(hit)
         if blockTeleportPosition then
