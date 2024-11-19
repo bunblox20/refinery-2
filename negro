@@ -1,6 +1,7 @@
 -- Variables globales
 local currentYellowBlock = nil
 local blockTeleportPosition = nil
+local playerTeleportPosition = nil
 
 -- Cargar la biblioteca de interfaz de usuario
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bunblox20/SONIC-BASICO/refs/heads/master/sonic2"))()
@@ -17,6 +18,29 @@ local function saveBlockTeleportPosition()
         print("Posición guardada para teletransporte del bloque: " .. tostring(blockTeleportPosition))
     else
         warn("No hay bloque amarillo creado.")
+    end
+end
+
+-- Función para guardar la posición de teletransporte del jugador
+local function savePlayerTeleportPosition()
+    local player = game.Players.LocalPlayer
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        playerTeleportPosition = player.Character.HumanoidRootPart.Position
+        print("Posición guardada para teletransporte del jugador: " .. tostring(playerTeleportPosition))
+    else
+        warn("No se pudo guardar la posición del jugador.")
+    end
+end
+
+-- Función para teletransportar al jugador a la posición guardada
+local function teleportPlayerToSavedPosition()
+    if playerTeleportPosition then
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(playerTeleportPosition)
+        end
+    else
+        warn("No hay una posición guardada para el jugador.")
     end
 end
 
@@ -39,7 +63,6 @@ local function createYellowBlock()
 
     -- Configurar teletransporte para objetos tocados
     block.Touched:Connect(function(hit)
-        -- Verificar si la posición guardada está definida
         if blockTeleportPosition then
             local parent = hit.Parent
             -- Teletransportar diferentes tipos de objetos
@@ -51,7 +74,7 @@ local function createYellowBlock()
                 hit.Position = blockTeleportPosition
             end
         else
-            warn("Posición de teletransporte no configurada.")
+            warn("Posición de teletransporte del bloque no configurada.")
         end
     end)
 end
@@ -63,7 +86,11 @@ BlockSection:NewButton("Guardar Posición de Teletransporte", "Guarda la posici�
 -- Configurar pestaña de Teletransportes
 local TeleportTab = Window:NewTab("Teletransportes")
 local TeleportSection = TeleportTab:NewSection("Tiendas")
-local RefinerySection = TeleportTab:NewSection("Refinerías")
+
+local PlayerTeleportSection = TeleportTab:NewSection("Teletransporte del Jugador")
+
+PlayerTeleportSection:NewButton("Guardar Posición", "Guarda la posición del jugador para teletransporte.", savePlayerTeleportPosition)
+PlayerTeleportSection:NewButton("Teletransportar Jugador", "Teletransporta al jugador a la posición guardada.", teleportPlayerToSavedPosition)
 
 -- Tiendas
 local shopLocations = {
@@ -80,25 +107,6 @@ local shopLocations = {
 
 for name, position in pairs(shopLocations) do
     TeleportSection:NewButton(name, "Teletransporta a la ubicación.", function()
-        local player = game.Players.LocalPlayer
-        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
-        end
-    end)
-end
-
--- Refinerías
-local refineryLocations = {
-    ["Cueva Storm"] = Vector3.new(1171.44, -185.28, 1150.52),
-    ["Cueva Fores"] = Vector3.new(1331.25, -444.28, -408.02),
-    ["Zona de Minería 1"] = Vector3.new(-6247.86, 121.35, -2190.77),
-    ["Zona de Cloud"] = Vector3.new(-7356.26, 761.10, -3684.18),
-    ["Cueva Marina"] = Vector3.new(-7894.11, 164.75, -3200.58),
-    ["Cueva del Vacío"] = Vector3.new(-6676.35, -505.75, 1169.98)
-}
-
-for name, position in pairs(refineryLocations) do
-    RefinerySection:NewButton(name, "Teletransporta a la ubicación.", function()
         local player = game.Players.LocalPlayer
         if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
