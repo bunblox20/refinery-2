@@ -38,6 +38,8 @@ local function teleportPlayerToSavedPosition()
         local player = game.Players.LocalPlayer
         if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             player.Character.HumanoidRootPart.CFrame = CFrame.new(playerTeleportPosition)
+        else
+            warn("El jugador no tiene un HumanoidRootPart válido.")
         end
     else
         warn("No hay una posición guardada para el jugador.")
@@ -89,6 +91,7 @@ local TeleportSection = TeleportTab:NewSection("Tiendas")
 
 local PlayerTeleportSection = TeleportTab:NewSection("Teletransporte del Jugador")
 
+-- Botones para guardar y teletransportar al jugador
 PlayerTeleportSection:NewButton("Guardar Posición", "Guarda la posición del jugador para teletransporte.", savePlayerTeleportPosition)
 PlayerTeleportSection:NewButton("Teletransportar Jugador", "Teletransporta al jugador a la posición guardada.", teleportPlayerToSavedPosition)
 
