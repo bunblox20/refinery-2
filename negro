@@ -11,13 +11,14 @@ local Window = Library.CreateLib("Interfaz Completa", "RJTheme3")
 local BlockTab = Window:NewTab("Bloques")
 local BlockSection = BlockTab:NewSection("Control de Bloques")
 
--- Función para guardar la posición de teletransporte del bloque amarillo
+-- Función para guardar la posición de teletransporte basada en el jugador
 local function saveBlockTeleportPosition()
-    if currentYellowBlock then
-        blockTeleportPosition = currentYellowBlock.Position
-        print("Nueva posición de teletransporte del bloque guardada: " .. tostring(blockTeleportPosition))
+    local player = game.Players.LocalPlayer
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        blockTeleportPosition = player.Character.HumanoidRootPart.Position
+        print("Nueva posición de teletransporte guardada en la posición del jugador: " .. tostring(blockTeleportPosition))
     else
-        warn("No hay bloque amarillo creado para guardar su posición.")
+        warn("No se pudo guardar la posición. Verifica que el jugador esté disponible.")
     end
 end
 
@@ -60,7 +61,7 @@ end
 
 -- Botones de control de bloques
 BlockSection:NewButton("Crear Bloque Amarillo", "Crea un bloque amarillo para teletransporte.", createYellowBlock)
-BlockSection:NewButton("Guardar Posición de Teletransporte", "Guarda la posición del bloque amarillo.", saveBlockTeleportPosition)
+BlockSection:NewButton("Guardar Posición de Teletransporte", "Guarda la posición actual del jugador como posición de teletransporte.", saveBlockTeleportPosition)
 
 -- Configurar pestaña de Teletransportes
 local TeleportTab = Window:NewTab("Teletransportes")
