@@ -115,6 +115,47 @@ for name, position in pairs(shopLocations) do
     end)
 end
 
+-- Cuevas y Refinerías
+local CaveTab = Window:NewTab("Refinerías")
+local CaveSection = CaveTab:NewSection("Cuevas y Refinerías")
+
+local caveLocations = {
+    ["Cueva Storm"] = Vector3.new(1171.44, -185.28, 1150.52),
+    ["Cueva Fores"] = Vector3.new(1331.25, -444.28, -408.02),
+    ["Zona de Minería 1"] = Vector3.new(-6247.86, 121.35, -2190.77),
+    ["Zona Cloud"] = Vector3.new(-7356.26, 761.10, -3684.18),
+    ["Cueva Marina"] = Vector3.new(-7894.11, 164.75, -3200.58),
+    ["Cueva del Vacío"] = Vector3.new(-6676.35, -505.75, 1169.98)
+}
+
+for name, position in pairs(caveLocations) do
+    CaveSection:NewButton(name, "Teletransporta a la ubicación.", function()
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+        end
+    end)
+end
+
+-- Altares
+local AltarTab = Window:NewTab("Altares")
+local AltarSection = AltarTab:NewSection("Teletransporte a Altares")
+
+local altarLocations = {
+    ["Altar de la Caña"] = Vector3.new(-1329.68, -348.48, 465.88),
+    ["Altar de Encantamientos"] = Vector3.new(3097.76, -587.18, -1568.88),
+    ["Altar Pico Sobrecultivado"] = Vector3.new(1175.14, -479.25, -1216.75)
+}
+
+for name, position in pairs(altarLocations) do
+    AltarSection:NewButton(name, "Teletransporta a la ubicación.", function()
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+        end
+    end)
+end
+
 -- Configurar pestaña de Extras
 local ExtrasTab = Window:NewTab("Extras")
 local ExtrasSection = ExtrasTab:NewSection("Utilidades")
