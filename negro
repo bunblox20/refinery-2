@@ -66,7 +66,6 @@ BlockSection:NewButton("Guardar Posición de Teletransporte", "Guarda la posici�
 -- Configurar pestaña de Teletransportes
 local TeleportTab = Window:NewTab("Teletransportes")
 local TeleportSection = TeleportTab:NewSection("Tiendas")
-
 local PlayerTeleportSection = TeleportTab:NewSection("Teletransporte del Jugador")
 
 -- Botones para guardar y teletransportar al jugador
@@ -131,4 +130,27 @@ for name, position in pairs(shopLocations) do
     end)
 end
 
--- Continuación del resto de pestañas...
+-- Altares
+local AltarTab = Window:NewTab("Altares")
+local AltarSection = AltarTab:NewSection("Teletransportes de Altares")
+
+local altarLocations = {
+    ["Altar de la Caña"] = Vector3.new(-1329.68, -348.48, 465.88),
+    ["Altar de Encantamientos"] = Vector3.new(3097.76, -587.18, -1568.88),
+    ["Altar Pico Sobrecultivado"] = Vector3.new(1175.14, -479.25, -1216.75)
+}
+
+for name, position in pairs(altarLocations) do
+    AltarSection:NewButton(name, "Teletransporta al altar.", function()
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(position)
+        end
+    end)
+end
+
+-- Créditos
+local CreditsTab = Window:NewTab("Créditos")
+local CreditsSection = CreditsTab:NewSection("Script creado por: Usuario")
+
+print("Script cargado completamente.")
