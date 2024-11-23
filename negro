@@ -5,7 +5,7 @@ local playerTeleportPosition = nil -- Para teletransportar al jugador
 
 -- Cargar la biblioteca de interfaz de usuario
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bunblox20/SONIC-BASICO/refs/heads/master/sonic2"))()
-local Window = Library.CreateLib("Interfaz Completa", "RJTheme3")
+local Window = Library.CreateLib("Teleportation Master UI", "RJTheme3")
 
 -- Configurar pestaña de Bloques
 local BlockTab = Window:NewTab("Bloques")
