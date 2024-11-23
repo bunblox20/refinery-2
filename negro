@@ -161,7 +161,7 @@ end)
 local ConfigTab = Window:NewTab("Configuración")
 local ConfigSection = ConfigTab:NewSection("Configuración de Tecla")
 
-ConfigSection:NewKeybind("Alternar Interfaz", "Abre/Cierra la interfaz.", Enum.KeyCode.LeftAlt, function()
+ConfigSection:NewKeybind("Alternar Interfaz", "Abre/Cierra la interfaz.", Enum.KeyCode.f, function()
     Library:ToggleUI()
 end)
 
