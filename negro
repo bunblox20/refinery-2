@@ -96,7 +96,7 @@ end)
 PlayerTeleportSection:NewButton("Teletransportar a Spawn", "Teletransporta al jugador a su zona de reaparición.", function()
     local player = game.Players.LocalPlayer
     if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local spawnLocation = game.Workspace:FindFirstChildWhichIsA("SpawnLocation") -- Encuentra el SpawnLocation
+        local spawnLocation = player:FindFirstChild("RespawnLocation") or game.Workspace:FindFirstChildWhichIsA("SpawnLocation") -- Encuentra el SpawnLocation
         if spawnLocation then
             player.Character.HumanoidRootPart.CFrame = spawnLocation.CFrame
             print("Teletransportado al SpawnLocation.")
@@ -148,6 +148,14 @@ for name, position in pairs(altarLocations) do
         end
     end)
 end
+
+-- Extras
+local ExtrasTab = Window:NewTab("Extras")
+local ExtrasSection = ExtrasTab:NewSection("Comandos Útiles")
+
+ExtrasSection:NewButton("Infinite Yield", "Carga Infinite Yield.", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
 
 -- Créditos
 local CreditsTab = Window:NewTab("Créditos")
