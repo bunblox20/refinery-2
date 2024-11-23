@@ -157,6 +157,14 @@ ExtrasSection:NewButton("Infinite Yield", "Carga Infinite Yield.", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
 end)
 
+-- Configurar pestaña para configurar tecla de cierre
+local ConfigTab = Window:NewTab("Configuración")
+local ConfigSection = ConfigTab:NewSection("Configuración de Tecla")
+
+ConfigSection:NewKeybind("Alternar Interfaz", "Abre/Cierra la interfaz.", Enum.KeyCode.LeftAlt, function()
+    Library:ToggleUI()
+end)
+
 -- Créditos
 local CreditsTab = Window:NewTab("Créditos")
 local CreditsSection = CreditsTab:NewSection("Script creado por: Usuario")
